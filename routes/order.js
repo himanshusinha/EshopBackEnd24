@@ -7,7 +7,7 @@ import {
   proccessOrder,
   processPayment,
 } from "../controllers/order.js";
-import { isAdmin, isAuthenticated } from "../middleware/auth.js";
+import { isAdmin, isAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 

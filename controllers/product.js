@@ -1,9 +1,9 @@
-import { asyncError } from "../middleware/error.js";
+import { asyncError } from "../middlewares/error.js";
 import { Product } from "../models/product.js";
 import ErrorHandler from "../utils/error.js";
 import { getDataUri } from "../utils/features.js";
-import { Category } from "../models/category.js";
 import cloudinary from "cloudinary";
+import { Category } from "../models/category.js";
 
 export const getAllProducts = asyncError(async (req, res, next) => {
   const { keyword, category } = req.query;
@@ -21,9 +21,24 @@ export const getAllProducts = asyncError(async (req, res, next) => {
     products,
   });
 });
+export const getAdminProducts = asyncError(async (req, res, next) => {
+  const products = await Product.find({}).populate("category");
+
+  const outOfStock = products.filter((i) => i.stock === 0);
+
+  res.status(200).json({
+    success: true,
+    products,
+    outOfStock: outOfStock.length,
+    inStock: products.length - outOfStock.length,
+  });
+});
+
 export const getProductDetails = asyncError(async (req, res, next) => {
-  const product = await Product.findById(req.params.id);
+  const product = await Product.findById(req.params.id).populate("category");
+
   if (!product) return next(new ErrorHandler("Product not found", 404));
+
   res.status(200).json({
     success: true,
     product,
@@ -61,8 +76,8 @@ export const updateProduct = asyncError(async (req, res, next) => {
   const { name, description, category, price, stock } = req.body;
 
   const product = await Product.findById(req.params.id);
-
   if (!product) return next(new ErrorHandler("Product not found", 404));
+
   if (name) product.name = name;
   if (description) product.description = description;
   if (category) product.category = category;
@@ -74,18 +89,6 @@ export const updateProduct = asyncError(async (req, res, next) => {
   res.status(200).json({
     success: true,
     message: "Product Updated Successfully",
-  });
-});
-export const getAdminProducts = asyncError(async (req, res, next) => {
-  const products = await Product.find({}).populate("category");
-
-  const outOfStock = products.filter((i) => i.stock === 0);
-
-  res.status(200).json({
-    success: true,
-    products,
-    outOfStock: outOfStock.length,
-    inStock: products.length - outOfStock.length,
   });
 });
 
@@ -172,7 +175,7 @@ export const getAllCategories = asyncError(async (req, res, next) => {
 });
 
 export const deleteCategory = asyncError(async (req, res, next) => {
-  const category = await Category.findByIdAndRemove(req.params.id);
+  const category = await Category.findById(req.params.id);
   if (!category) return next(new ErrorHandler("Category Not Found", 404));
   const products = await Product.find({ category: category._id });
 
@@ -181,6 +184,8 @@ export const deleteCategory = asyncError(async (req, res, next) => {
     product.category = undefined;
     await product.save();
   }
+
+  await category.remove();
 
   res.status(200).json({
     success: true,
