@@ -31,11 +31,12 @@ export const cookieOptions = {
 
 export const sendEmail = async (subject, to, text) => {
   const transporter = createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: "sandbox.smtp.mailtrap.io",
+    port: 2525,
+    secure: false,
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: "dbd0b5629dcf08",
+      pass: "06d546dd191019",
     },
   });
 
