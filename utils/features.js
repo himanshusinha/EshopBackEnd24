@@ -8,39 +8,21 @@ export const getDataUri = (file) => {
   return parser.format(extName, file.buffer);
 };
 
-// export const sendToken = (user, res, message, statusCode) => {
-//   const token = user.generateToken();
-
-//   res
-//     .status(statusCode)
-//     .cookie("token", token, {
-//       ...cookieOptions,
-//       expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
-//     })
-//     .json({
-//       success: true,
-//       message: message,
-//     });
-// };
-
 export const sendToken = (user, res, message, statusCode) => {
-  const token = user.getSignedToken();
-
-  // Set expiration time to 1 second
-  const expiresIn = 1;
+  const token = user.generateToken();
 
   res
     .status(statusCode)
     .cookie("token", token, {
-      httpOnly: true,
-      expires: new Date(Date.now() + expiresIn * 1000),
+      ...cookieOptions,
+      expires: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
     })
     .json({
       success: true,
-      message,
-      token,
+      message: message,
     });
 };
+
 export const cookieOptions = {
   secure: process.env.NODE_ENV === "Development" ? false : true,
   httpOnly: process.env.NODE_ENV === "Development" ? false : true,
