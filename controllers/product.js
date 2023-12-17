@@ -21,6 +21,7 @@ export const getAllProducts = asyncError(async (req, res, next) => {
     products,
   });
 });
+
 export const getAdminProducts = asyncError(async (req, res, next) => {
   const products = await Product.find({}).populate("category");
 
