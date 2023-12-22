@@ -30,6 +30,7 @@ export const createOrder = asyncError(async (req, res, next) => {
     totalAmount,
   } = req.body;
 
+  // Create the order
   await Order.create({
     user: req.user._id,
     shippingInfo,
@@ -42,8 +43,28 @@ export const createOrder = asyncError(async (req, res, next) => {
     totalAmount,
   });
 
+  // Update product stocks
   for (let i = 0; i < orderItems.length; i++) {
     const product = await Product.findById(orderItems[i].product);
+
+    // Check if the product exists
+    if (!product) {
+      return next(
+        new ErrorHandler(
+          `Product with ID ${orderItems[i].product} not found`,
+          404
+        )
+      );
+    }
+
+    // Check if there's enough stock
+    if (product.stock < orderItems[i].quantity) {
+      return next(
+        new ErrorHandler(`Product ${product.name} is out of stock`, 400)
+      );
+    }
+
+    // Decrease the product stock
     product.stock -= orderItems[i].quantity;
     await product.save();
   }

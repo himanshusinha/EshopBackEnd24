@@ -66,9 +66,5 @@ schema.methods.generateToken = function () {
     expiresIn: "15d",
   });
 };
-schema.methods.getSignedToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIRE || "1s", // Default to 1 hour if not specified
-  });
-};
+
 export const User = mongoose.model("User", schema);
