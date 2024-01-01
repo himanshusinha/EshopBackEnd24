@@ -19,8 +19,8 @@ export const sendToken = (user, res, message, statusCode) => {
     })
     .json({
       success: true,
-      message: message,
-      token: token, // Including the token in the response body
+      message: `${message}, ${user.name}`,
+      token: token, // Include the token in the response
     });
 };
 
