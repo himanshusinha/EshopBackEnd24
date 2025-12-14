@@ -17,7 +17,7 @@ const router = express.Router();
 
 router.post("/login", login);
 
-router.post("/new", singleUpload, signup);
+router.post("/signup", singleUpload, signup);
 
 router.get("/me", isAuthenticated, getMyProfile);
 router.get("/logout", isAuthenticated, logOut);
