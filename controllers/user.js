@@ -155,10 +155,11 @@ export const updatePic = asyncError(async (req, res, next) => {
 
 export const forgetpassword = asyncError(async (req, res, next) => {
   const { email } = req.body;
-
   const user = await User.findOne({ email });
 
   if (!user) return next(new ErrorHandler("Incorrect Email", 404));
+  // max,min 2000,10000
+  // math.random()*(max-min)+min
 
   const randomNumber = Math.random() * (999999 - 100000) + 100000;
   const otp = Math.floor(randomNumber);
@@ -168,10 +169,9 @@ export const forgetpassword = asyncError(async (req, res, next) => {
   user.otp_expire = new Date(Date.now() + otp_expire);
   await user.save();
 
-  const message = `Your OTP for resetting your password is ${otp}.\nPlease ignore this email if you haven't requested a password reset.`;
-
+  const message = `Your OTP for Reseting Password is ${otp}.\n Please ignore if you haven't requested this.`;
   try {
-    await sendEmail("OTP For Resetting Password", user.email, message);
+    await sendEmail("OTP For Reseting Password", user.email, message);
   } catch (error) {
     user.otp = null;
     user.otp_expire = null;
@@ -179,10 +179,9 @@ export const forgetpassword = asyncError(async (req, res, next) => {
     return next(error);
   }
 
-  // Respond with a success message
   res.status(200).json({
     success: true,
-    message: `Email sent to ${user.email}`,
+    message: `Email Sent To ${user.email}`,
   });
 });
 

@@ -32,17 +32,26 @@ export const cookieOptions = {
 
 export const sendEmail = async (subject, to, text) => {
   const transporter = createTransport({
-    host: process.env.SMTP_HOST,
-    port: process.env.SMTP_PORT,
+    host: process.env.SMTP_HOST, // Mailtrap host (sandbox.smtp.mailtrap.io)
+    port: process.env.SMTP_PORT, // Mailtrap port (2525)
     auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
+      user: process.env.SMTP_USER, // Your SMTP username (from Mailtrap)
+      pass: process.env.SMTP_PASSWORD, // Your SMTP password (from Mailtrap)
     },
   });
 
-  await transporter.sendMail({
-    to,
-    subject,
-    text,
-  });
+  try {
+    // Sending the email
+    await transporter.sendMail({
+      from: process.env.SMTP_USER, // The email address you're sending from (same as SMTP user)
+      to, // Recipient email address
+      subject, // Email subject
+      text, // Email body content
+    });
+
+    console.log("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    throw new Error("Failed to send email");
+  }
 };
