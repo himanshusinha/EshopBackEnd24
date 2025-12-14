@@ -128,18 +128,11 @@ export const changePassword = asyncError(async (req, res, next) => {
 export const updatePic = asyncError(async (req, res, next) => {
   const user = await User.findById(req.user._id);
 
-  // Check if there's an existing avatar and public_id
-  if (user.avatar && user.avatar.public_id) {
-    // Destroy the old avatar
-    await cloudinary.v2.uploader.destroy(user.avatar.public_id);
-  } else {
-    console.log("No avatar to delete.");
-  }
-
-  // Upload the new avatar
   const file = getDataUri(req.file);
-  const myCloud = await cloudinary.v2.uploader.upload(file.content);
 
+  await cloudinary.v2.uploader.destroy(user.avatar.public_id);
+
+  const myCloud = await cloudinary.v2.uploader.upload(file.content);
   user.avatar = {
     public_id: myCloud.public_id,
     url: myCloud.secure_url,

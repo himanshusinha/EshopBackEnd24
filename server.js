@@ -2,10 +2,11 @@ import { app } from "./app.js";
 import { connectDB } from "./data/database.js";
 import cloudinary from "cloudinary";
 import Stripe from "stripe";
-
+import mongoose from "mongoose";
 connectDB();
 
 export const stripe = new Stripe(process.env.STRIPE_API_SECRET);
+mongoose.set("strictQuery", false);
 
 cloudinary.v2.config({
   cloud_name: process.env.CLOUDINARY_NAME,
